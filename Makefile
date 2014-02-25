@@ -1,5 +1,5 @@
 
-SRC     = src/clib-uninstall.c
+SRC     = $(wildcard src/*.c)
 DEPS    = $(wildcard deps/*/*.c)
 OBJS    = $(SRC:.c=.o)
 OBJS   += $(DEPS:.c=.o)
