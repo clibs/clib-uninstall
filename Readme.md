@@ -3,6 +3,8 @@
 
   clib(1) plugin for uninstalling executables.
 
+[![Build Status](https://travis-ci.org/clibs/clib-uninstall.png?branch=master)](https://travis-ci.org/clibs/clib-uninstall)
+
 ## Installation
 
     $ clib install clib-uninstall
