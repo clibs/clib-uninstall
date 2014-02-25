@@ -1,0 +1,14 @@
+{
+  "name": "clib-uninstall",
+  "repo": "clibs/clib-uninstall",
+  "install": "make install",
+  "uninstall": "make uninstall",
+  "dependencies": {
+    "commander": "1.3.2",
+    "kgabis/parson": "*",
+    "stephenmathieson/http-get.c": "0.1.0",
+    "Constellation/console-colors.c": "1.0.0",
+    "stephenmathieson/str-copy.c": "0.0.3",
+    "stephenmathieson/substr.c": "0.1.0"
+  }
+}
