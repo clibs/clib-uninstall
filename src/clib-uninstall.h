@@ -9,7 +9,7 @@
 #ifndef CLIB_UNINSTALL_H
 #define CLIB_UNINSTALL_H 1
 
-#define CLIB_UNINSTALL_VERSION "0.0.1"
+#define CLIB_UNINSTALL_VERSION "1.0.0"
 
 /**
  * Default uninstallation target.
