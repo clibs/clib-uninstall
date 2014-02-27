@@ -152,6 +152,7 @@ clib_uninstall(const char *owner, const char *name, const char *version) {
 
 cleanup:
   if (target) free(target);
+  if (command) free(command);
   if (tarpath) free(tarpath);
   if (file) free(file);
   if (tarball) free(tarball);
