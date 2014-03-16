@@ -1,2 +1,3 @@
 *.o
 clib-uninstall
+deps/
