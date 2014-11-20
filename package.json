@@ -9,7 +9,7 @@
     "kgabis/parson": "*",
     "stephenmathieson/http-get.c": "0.1.0",
     "Constellation/console-colors.c": "1.0.0",
-    "stephenmathieson/str-copy.c": "0.0.3",
-    "stephenmathieson/substr.c": "0.1.1"
+    "strdup": "*",
+    "stephenmathieson/substr.c": "0.1.2"
   }
 }
