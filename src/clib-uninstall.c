@@ -8,7 +8,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "str-copy/str-copy.h"
 #include "http-get/http-get.h"
 #include "parson/parson.h"
 #include "clib-uninstall.h"

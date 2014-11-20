@@ -10,7 +10,7 @@
 #include <string.h>
 #include "commander/commander.h"
 #include "substr/substr.h"
-#include "str-copy/str-copy.h"
+#include "strdup/strdup.h"
 #include "clib-uninstall.h"
 #include "log.h"
 
@@ -19,12 +19,12 @@ static char *
 parse_author(const char *slug) {
   char *name = NULL;
   char *author = NULL;
-  char *copy = str_copy(slug);
+  char *copy = strdup(slug);
   if (NULL == copy) return NULL;
 
   name = strstr(copy, "/");
   if (!name) {
-    author = str_copy("clibs");
+    author = strdup("clibs");
     goto cleanup;
   }
 
@@ -45,7 +45,7 @@ parse_name(const char *slug) {
   char *t = NULL;
   char *version = NULL;
 
-  if (!(copy = str_copy(slug))) return NULL;
+  if (!(copy = strdup(slug))) return NULL;
   version = strstr(copy, "@");
   if (version) {
     // drop version
@@ -62,7 +62,7 @@ parse_name(const char *slug) {
 
 cleanup:
   free(copy);
-  return str_copy(name);
+  return strdup(name);
 }
 
 
