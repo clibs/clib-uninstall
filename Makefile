@@ -5,7 +5,11 @@ OBJS    = $(SRC:.c=.o)
 OBJS   += $(DEPS:.c=.o)
 
 CFLAGS  = -Ideps -std=c99 -Wall -Wextra
+ifeq ($(OS),Windows_NT)
+LDFLAGS = -lcurldll
+else
 LDFLAGS = -lcurl
+endif
 
 BIN    ?= clib-uninstall
 PREFIX ?= /usr/local
