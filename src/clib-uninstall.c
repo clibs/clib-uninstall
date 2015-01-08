@@ -99,51 +99,46 @@ done:
   return target;
 }
 
-
 int
 clib_uninstall(const char *owner, const char *name, const char *version) {
   char *tarball = NULL;
   char *file = NULL;
   char *tarpath = NULL;
-  char *command = NULL;
+  char *cmd = NULL;
   char *target = NULL;
   int rc = -1;
 
-  if (!owner || !name || !version) goto cleanup;
+  // sanity
+  if (!owner || !name || !version) return -1;
 
-  tarball = get_tarball_url(owner, name, version);
-  if (!tarball) goto cleanup;
-
-  file = get_tar_filepath(name, version);
-  if (!file) goto cleanup;
-
-  tarpath = get_tmp_tarball(file);
-  if (!tarpath) goto cleanup;
+  if (!(tarball = get_tarball_url(owner, name, version))) goto done;
+  if (!(file = get_tar_filepath(name, version))) goto done;
+  if (!(tarpath = get_tmp_tarball(file))) goto done;
 
   logger_info("fetch", tarball);
   if (-1 == http_get_file(tarball, tarpath)) {
     logger_error("error", "failed to fetch tarball");
-    goto cleanup;
+    goto done;
   }
 
-  command = get_untar_command(file);
-  if (!command) goto cleanup;
+  if (!(cmd = get_untar_command(file))) goto done;
 
   logger_info("untar", tarpath);
-  if (0 != system(command)) {
+  if (0 != system(cmd)) {
     logger_error("error", "failed to untar");
-    goto cleanup;
+    goto done;
   }
 
   target = get_uninstall_target(name, version);
-  if (!target) goto cleanup;
+  if (!target) goto done;
 
   rc = system(target);
 
-cleanup:
-  if (target) free(target);
-  if (tarpath) free(tarpath);
-  if (file) free(file);
-  if (tarball) free(tarball);
+done:
+  free(tarball);
+  free(file);
+  free(tarpath);
+  free(cmd);
+  free(target);
   return rc;
 }
