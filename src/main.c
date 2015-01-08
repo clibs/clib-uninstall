@@ -12,59 +12,8 @@
 #include "substr/substr.h"
 #include "strdup/strdup.h"
 #include "logger/logger.h"
+#include "parse-repo/parse-repo.h"
 #include "clib-uninstall.h"
-
-// TODO replace
-static char *
-parse_author(const char *slug) {
-  char *name = NULL;
-  char *author = NULL;
-  char *copy = strdup(slug);
-  if (NULL == copy) return NULL;
-
-  name = strstr(copy, "/");
-  if (!name) {
-    author = strdup("clibs");
-    goto cleanup;
-  }
-
-  int delta = name - copy;
-  if (!delta || !(author = malloc(delta * sizeof(char *)))) goto cleanup;
-  author = substr(copy, 0, delta);
-
-cleanup:
-  free(copy);
-  return author;
-}
-
-// TODO replace
-static char *
-parse_name(const char *slug) {
-  char *copy = NULL;
-  char *name = NULL;
-  char *t = NULL;
-  char *version = NULL;
-
-  if (!(copy = strdup(slug))) return NULL;
-  version = strstr(copy, "@");
-  if (version) {
-    // drop version
-    copy = substr(copy, 0, version - copy);
-  }
-  t = strstr(copy, "/");
-  if (!t) {
-    name = copy;
-    goto cleanup;
-  }
-  t++;
-  if (0 == strlen(t)) goto cleanup;
-  name = t;
-
-cleanup:
-  free(copy);
-  return strdup(name);
-}
-
 
 int
 main(int argc, char **argv) {
@@ -80,9 +29,9 @@ main(int argc, char **argv) {
   if (0 == program.argc) command_help(&program);
 
   for (int i = 0; i < program.argc; i++) {
-    char *owner = parse_author(program.argv[i]);
+    char *owner = parse_repo_owner(program.argv[i], NULL);
     if (!owner) goto cleanup;
-    char *name = parse_name(program.argv[i]);
+    char *name = parse_repo_name(program.argv[i]);
     if (!name) {
       free(owner);
       goto cleanup;
