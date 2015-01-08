@@ -11,105 +11,94 @@
 #include "http-get/http-get.h"
 #include "parson/parson.h"
 #include "logger/logger.h"
+#include "asprintf/asprintf.h"
 #include "clib-uninstall.h"
+
 
 static char *
 get_tarball_url(const char *owner, const char *name, const char *version) {
-  size_t size = 19 // https://github.com/
-              + strlen(owner)
-              + 1 // /
-              + strlen(name)
-              + 9 // /archive/
-              + strlen(version)
-              + 7; // .tar.gz
-  char *tarball = malloc(size * sizeof(char *));
-  if (tarball) {
-    sprintf(tarball
+  char *tarball = NULL;
+  int size = 0;
+
+  size = asprintf(
+      &tarball
     , "https://github.com/%s/%s/archive/%s.tar.gz"
     , owner
     , name
-    , version);
-  }
+    , version
+  );
+
+  if (-1 == size) return NULL;
   return tarball;
 }
 
 static char *
 get_tar_filepath(const char *name, const char *version) {
-  size_t size = 1 // null
-              + strlen(name)
-              + 1 // -
-              + strlen(version)
-              + 7; // .tar.gz
-  char *file = malloc(size * sizeof(char *));
-  if (file) sprintf(file, "%s-%s.tar.gz", name, version);
+  char *file = NULL;
+  int size = asprintf(&file, "%s-%s.tar.gz", name, version);
+  if (-1 == size) return NULL;
   return file;
 }
 
 static char *
 get_tmp_tarball(const char *file) {
-  size_t size = 5 // /tmp/ + null
-              + strlen(file);
-  char *tmp = malloc(size * sizeof(char *));
-  if (tmp) sprintf(tmp, "/tmp/%s", file);
+  char *tmp = NULL;
+  int size = asprintf(&tmp, "/tmp/%s", file);
+  if (-1 == size) return NULL;
   return tmp;
 }
 
 static char *
 get_untar_command(const char *file) {
-  size_t size = 19 // cd /tmp && tar -xf
-              + strlen(file);
-  char *command = malloc(size * sizeof(char *));
-  if (command) sprintf(command, "cd /tmp && tar -xf %s", file);
-  return command;
+  char *cmd = NULL;
+  int size = 0;
+  size = asprintf(&cmd, "cd /tmp && tar -xf %s", file);
+  if (-1 == size) return NULL;
+  return cmd;
 }
 
 static char *
 get_uninstall_target(const char *name, const char *version) {
-  size_t size = 5 // /tmp/
-              + strlen(name)
-              + 1 // /
-              + strlen(version);
+  int size = 0;
   char *target = NULL;
-  char *dir = malloc(size * sizeof(char *));
-  char *package_json = malloc((size + 13) * sizeof(char));
+  char *dir = NULL;
+  char *pkg = NULL;
+  const char *val = NULL;
   JSON_Value *root = NULL;
-  JSON_Object *object = NULL;
+  JSON_Object *obj = NULL;
 
-  if (!dir || !package_json) goto cleanup;
+  size = asprintf(&dir, "/tmp/%s-%s", name, version);
+  if (-1 == size) return NULL;
 
-  sprintf(dir, "/tmp/%s-%s", name, version);
-  sprintf(package_json, "%s/package.json", dir);
+  size = asprintf(&pkg, "%s/package.json", dir);
+  if (-1 == size) goto done;
 
-  root = json_parse_file(package_json);
-  if (!root) goto cleanup;
+  root = json_parse_file(pkg);
+  if (!root) goto done;
 
-  object = json_value_get_object(root);
-  if (!object) goto cleanup;
+  obj = json_value_get_object(root);
+  if (!obj) goto done;
 
-  const char *value = json_object_get_string(object, "uninstall");
-  if (!value) {
+  val = json_object_get_string(obj, "uninstall");
+  if (!val) {
     logger_warn(
         "warning"
       , "No uninstall target specified.  Defaulting to '%s'."
       , CLIB_UNINSTALL_DEFAULT_TARGET
     );
     // default to "make uninstall"
-    value = CLIB_UNINSTALL_DEFAULT_TARGET;
+    val = CLIB_UNINSTALL_DEFAULT_TARGET;
   }
 
-  size = 3 // 'cd '
-       + strlen(dir)
-       + 4 // ' && '
-       + strlen(value);
-  target = malloc(size * sizeof(char *));
-  if (target) sprintf(target, "cd %s && %s", dir, value);
+  size = asprintf(&target, "cd %s && %s", dir, val);
 
-cleanup:
+done:
   if (root) json_value_free(root);
-  if (dir) free(dir);
-  if (package_json) free(package_json);
+  free(dir);
+  free(pkg);
   return target;
 }
+
 
 int
 clib_uninstall(const char *owner, const char *name, const char *version) {
