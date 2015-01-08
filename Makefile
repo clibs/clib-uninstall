@@ -1,24 +1,18 @@
 
-SRC     = $(wildcard src/*.c)
-DEPS    = $(wildcard deps/*/*.c)
-OBJS    = $(SRC:.c=.o)
-OBJS   += $(DEPS:.c=.o)
-
-CFLAGS  = -Ideps -std=c99 -Wall -Wextra
+BIN ?= clib-uninstall
+PREFIX ?= /usr/local
+SRC = $(wildcard src/*.c)
+DEPS = $(wildcard deps/*/*.c)
+OBJS = $(SRC:.c=.o) $(DEPS:.c=.o)
+CFLAGS = -Ideps -std=c99 -Wall -Wextra
 ifeq ($(OS),Windows_NT)
 LDFLAGS = -lcurldll
 else
 LDFLAGS = -lcurl
 endif
 
-BIN    ?= clib-uninstall
-PREFIX ?= /usr/local
-
-$(BIN): src/main.o $(OBJS)
+$(BIN): $(OBJS)
 	$(CC) $^ -o $@ $(LDFLAGS)
-
-%.o: %.c
-	$(CC) $< -c -o $@ $(CFLAGS)
 
 install: $(BIN)
 	cp -f $(BIN) $(PREFIX)/bin/
@@ -27,7 +21,7 @@ uninstall:
 	rm -f $(PREFIX)/bin/$(BIN)
 
 clean:
-	rm -f $(OBJS) $(BIN) src/main.o
+	rm -f $(OBJS) $(BIN)
 
 test: $(BIN)
 	./test.sh
