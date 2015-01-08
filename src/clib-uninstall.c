@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include "http-get/http-get.h"
 #include "parson/parson.h"
+#include "logger/logger.h"
 #include "clib-uninstall.h"
-#include "log.h"
 
 static char *
 get_tarball_url(const char *owner, const char *name, const char *version) {
@@ -88,9 +88,11 @@ get_uninstall_target(const char *name, const char *version) {
 
   const char *value = json_object_get_string(object, "uninstall");
   if (!value) {
-    warn("warning"
+    logger_warn(
+        "warning"
       , "No uninstall target specified.  Defaulting to '%s'."
-      , CLIB_UNINSTALL_DEFAULT_TARGET);
+      , CLIB_UNINSTALL_DEFAULT_TARGET
+    );
     // default to "make uninstall"
     value = CLIB_UNINSTALL_DEFAULT_TARGET;
   }
@@ -129,18 +131,18 @@ clib_uninstall(const char *owner, const char *name, const char *version) {
   tarpath = get_tmp_tarball(file);
   if (!tarpath) goto cleanup;
 
-  log("fetch", tarball);
+  logger_info("fetch", tarball);
   if (-1 == http_get_file(tarball, tarpath)) {
-    error("error", "failed to fetch tarball");
+    logger_error("error", "failed to fetch tarball");
     goto cleanup;
   }
 
   command = get_untar_command(file);
   if (!command) goto cleanup;
 
-  log("untar", tarpath);
+  logger_info("untar", tarpath);
   if (0 != system(command)) {
-    error("error", "failed to untar");
+    logger_error("error", "failed to untar");
     goto cleanup;
   }
 

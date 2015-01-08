@@ -11,8 +11,8 @@
 #include "commander/commander.h"
 #include "substr/substr.h"
 #include "strdup/strdup.h"
+#include "logger/logger.h"
 #include "clib-uninstall.h"
-#include "log.h"
 
 // TODO replace
 static char *
@@ -92,7 +92,7 @@ main(int argc, char **argv) {
     free(owner);
     free(name);
     if (-1 == res) {
-      error("error", "Failed to uninstall %s", program.argv[i]);
+      logger_error("error", "Failed to uninstall %s", program.argv[i]);
       goto cleanup;
     }
   }
