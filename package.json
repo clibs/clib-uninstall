@@ -1,7 +1,7 @@
 {
   "name": "clib-uninstall",
   "repo": "clibs/clib-uninstall",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "install": "make install",
   "uninstall": "make uninstall",
   "dependencies": {
