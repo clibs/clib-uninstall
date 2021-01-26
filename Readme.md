@@ -1,3 +1,6 @@
+# This repository has been merged into [clibs/clib](https://github.com/clibs/clib)
+
+----
 
 # clib-uninstall(1)
 
